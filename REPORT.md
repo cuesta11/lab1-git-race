@@ -1,18 +1,26 @@
 # Lab 1 Git Race -- Project Report
 
 ## 1. Description of Changes
-- **Feature 1**: Dynamic greeting by time of day (morning/afternoon/evening).
-    **Description of Changes**  
-    - Modified `HelloController.kt` to include a private method `getTimeBasedGreeting()` that decides between “Good morning”, “Good afternoon”, and “Good evening” based on the current system time.  
-    - Updated both the web controller (`/`) and the REST API controller (`/api/hello`) to use this dynamic greeting instead of the static "Hello".  
+**Description of Changes**  
+- Modified `HelloController.kt` and `HelloApiController.kt` to include a method `getTimeBasedGreeting()` that selects the appropriate greeting based on the current hour.  
+- Updated the web and API endpoints to return greetings such as “Good morning”, “Good afternoon”, “Good evening”, or “Good night”.  
+- Adjusted `welcome.html` to display the dynamic greeting.  
+- Updated unit, MVC, and integration tests to validate the new behavior using regex patterns.  
 
-    **Technical Decisions**  
-    - Used `java.time.LocalTime` from the Java standard library for reliability and simplicity.  
-    - Chose ranges:  
-    - 06:00–11:59 → Good morning  
-    - 12:00–19:59 → Good afternoon  
-    - 20:00–05:59 → Good evening  
-    - Implemented the logic separately in both controllers to keep them independent.  
+**Technical Decisions**  
+- Used `java.time.LocalTime` to determine the hour of the day.  
+- Chose four time ranges:  
+- 03:00–12:00 → Good morning  
+- 13:00–19:00 → Good afternoon  
+- 20:00–22:00 → Good evening  
+- Others → Good night  
+- Tests were updated to validate multiple possible outcomes, ensuring robustness across different times of execution.  
+
+**Learning Outcomes**  
+- Learned how to extend a Spring Boot + Kotlin controller with new logic.  
+- Practiced writing flexible tests (regex) for non-deterministic outputs.  
+- Understood how to modify MVC and integration tests consistently with new business logic.
+ 
 
 - **Feature 2**: Multi-language support (English and Spanish).
 - **Feature 3**: Greeting history stored in memory and exposed via REST + optional web page.
