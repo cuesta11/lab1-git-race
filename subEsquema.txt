@@ -1,0 +1,90 @@
+Subesquema detallado por feature
+🔹 Feature 1 – Dynamic Greeting (según hora del día)
+
+Objetivo: Mostrar “Good morning / Good afternoon / Good evening” en lugar de un saludo fijo.
+
+Código:
+
+Editar HelloController.kt → lógica en el método que devuelve el saludo.
+
+Usar LocalTime.now() para decidir el mensaje.
+
+Vista (opcional):
+
+En welcome.html, mostrar el saludo dinámico.
+
+Test:
+
+Añadir un unit test sencillo en HelloControllerUnitTests.kt simulando diferentes horas.
+
+Documentación (REPORT.md):
+
+Description of Changes: explicar cómo se añadió la lógica de hora.
+
+Technical Decisions: justificar uso de LocalTime en vez de hardcode.
+
+🔹 Feature 2 – Multi-language Support (i18n)
+
+Objetivo: Permitir que la app muestre mensajes en inglés o español según configuración/usuario.
+
+Código:
+
+Crear messages.properties (en inglés, por defecto).
+
+Crear messages_es.properties (traducción al español).
+
+Configurar application.properties para habilitar i18n (spring.messages.basename=messages).
+
+En HelloController.kt, usar MessageSource para recuperar los textos según idioma.
+
+Vista:
+
+En welcome.html, mostrar saludo traducido.
+
+Opcional: botón o link para cambiar idioma (?lang=es).
+
+Test:
+
+Añadir prueba que verifique que al llamar al endpoint con Accept-Language: es responde en español.
+
+Documentación (REPORT.md):
+
+Description of Changes: explicar cómo se implementó i18n.
+
+Technical Decisions: por qué usar archivos messages_xx.properties.
+
+🔹 Feature 3 – Greeting History
+
+Objetivo: Guardar todos los saludos generados y mostrarlos en API y (opcionalmente) en web.
+
+Código:
+
+Crear HistoryService.kt → almacena en una lista los saludos (name, timestamp).
+
+Modificar HelloController.kt → cada vez que se saluda, añadir entrada al histórico.
+
+Nuevo endpoint /api/history que devuelva el listado en JSON.
+
+Vista (opcional):
+
+Crear history.html con Thymeleaf → mostrar histórico en tabla.
+
+Test:
+
+Unit test que verifique que el histórico crece al hacer varias peticiones.
+
+Integration test que consuma /api/history y devuelva JSON válido.
+
+Documentación (REPORT.md):
+
+Description of Changes: detallar el nuevo servicio y endpoint.
+
+Technical Decisions: explicar que se usó memoria en vez de base de datos para simplificar.
+
+📌 Resumen del flujo de trabajo
+
+Crear rama → implementar feature → testear → documentar → commit → push.
+
+Completar la sección correspondiente en REPORT.md.
+
+Actualizar README.md con endpoints nuevos.
