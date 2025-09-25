@@ -54,6 +54,7 @@ A modern Spring Boot application built with Kotlin, featuring a responsive web i
    - Web Interface: http://localhost:8080
    - API Endpoint: http://localhost:8080/api/hello
    - Health Check: http://localhost:8080/actuator/health
+   - Greeting History: http://localhost:8080/api/history
 
 ### Using Docker for Development
 
@@ -96,6 +97,7 @@ Run specific test classes:
 ### REST API Endpoints
 - `GET /api/hello` - Returns JSON greeting with timestamp
 - `GET /api/hello?name={name}` - Returns personalized JSON greeting
+- `GET /api/history` - Returns the in-memory list of all greetings (added in Feature 3)
 
 ### Monitoring Endpoints
 - `GET /actuator/health` - Application health status

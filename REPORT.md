@@ -49,7 +49,7 @@
 - ChatGPT (OpenAI)
 
 ### AI-Assisted Work
-- Help telling how gitHub and arms work.
+- Help telling how do gitHub and branches work.
 - Guidance on incremental implementation.
 - Suggested code snippets for controllers, tests, and configuration.
 - Help structuring the project report and documentation.
