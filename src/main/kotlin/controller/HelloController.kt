@@ -28,12 +28,25 @@ class HelloController(
 
 @RestController
 class HelloApiController {
-    
+
+    companion object {
+        private val history = mutableListOf<String>()
+    }
+
     @GetMapping("/api/hello", produces = [MediaType.APPLICATION_JSON_VALUE])
     fun helloApi(@RequestParam(defaultValue = "World") name: String): Map<String, String> {
+        val greeting = "Hello, $name!"
+        history.add(greeting)
+
         return mapOf(
-            "message" to "Hello, $name!",
+            "message" to greeting,
             "timestamp" to java.time.Instant.now().toString()
         )
     }
+
+    @GetMapping("/api/history", produces = [MediaType.APPLICATION_JSON_VALUE])
+    fun historyApi(): List<String> {
+        return history.toList()
+    }
 }
+
