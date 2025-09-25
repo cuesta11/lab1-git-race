@@ -77,4 +77,24 @@ class IntegrationTest {
         assertThat(response.body).contains("Health Check")
         assertThat(response.body).contains("Learning Notes:")
     }
+
+    @Test
+    fun `should store greetings in history`() {
+        // 1. Hacemos dos llamadas a /api/hello
+        val response1 = restTemplate.getForEntity("http://localhost:$port/api/hello?name=Ana", String::class.java)
+        val response2 = restTemplate.getForEntity("http://localhost:$port/api/hello?name=Luis", String::class.java)
+
+        assertThat(response1.statusCode).isEqualTo(HttpStatus.OK)
+        assertThat(response2.statusCode).isEqualTo(HttpStatus.OK)
+
+        // 2. Consultamos /api/history
+        val historyResponse = restTemplate.getForEntity("http://localhost:$port/api/history", String::class.java)
+
+        // 3. Validamos que la respuesta es JSON con los saludos anteriores
+        assertThat(historyResponse.statusCode).isEqualTo(HttpStatus.OK)
+        assertThat(historyResponse.headers.contentType).isEqualTo(MediaType.APPLICATION_JSON)
+        assertThat(historyResponse.body).contains("Hello, Ana!")
+        assertThat(historyResponse.body).contains("Hello, Luis!")
+    }
+
 }
