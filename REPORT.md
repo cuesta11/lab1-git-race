@@ -1,29 +1,5 @@
 # Lab 1 Git Race -- Project Report
 
-## 1. Description of Changes
-
-### Feature 1: Dynamic Greeting by Time of Day
-**Description of Changes**  
-- Modified `HelloController.kt` and `HelloApiController.kt` to include a method `getTimeBasedGreeting()` that selects the appropriate greeting based on the current hour.  
-- Updated the web and API endpoints to return greetings such as “Good morning”, “Good afternoon”, “Good evening”, or “Good night”.  
-- Adjusted `welcome.html` to display the dynamic greeting.  
-- Updated unit, MVC, and integration tests to validate the new behavior using regex patterns.  
-
-**Technical Decisions**  
-- Used `java.time.LocalTime` to determine the hour of the day.  
-- Chose four time ranges:  
-  - 03:00–12:00 → Good morning  
-  - 13:00–19:00 → Good afternoon  
-  - 20:00–22:00 → Good evening  
-  - Others → Good night  
-- Tests were updated to validate multiple possible outcomes, ensuring robustness across different times of execution.  
-
-**Learning Outcomes**  
-- Learned how to extend a Spring Boot + Kotlin controller with new logic.  
-- Practiced writing flexible tests (regex) for non-deterministic outputs.  
-- Understood how to modify MVC and integration tests consistently with new business logic.
- 
-
 ### Feature 2: Internationalization (i18n) with `?lang` parameter
   
 Enable English/Spanish localization for:
@@ -44,8 +20,7 @@ switchable via the URL parameter `?lang=<en|es>`.
   - `LocaleConfig.kt`: `SessionLocaleResolver` (default `Locale.ENGLISH`) + `LocaleChangeInterceptor` with `paramName=lang` to honor `?lang=es|en`.
 - **Controllers**
   - `HelloController.kt` / inner `HelloApiController`: inject `MessageSource` and resolve the greeting via  
-    `messageSource.getMessage(key, null, LocaleContextHolder.getLocale())`,  
-    where `key` is chosen by hour (`greeting.morning|afternoon|evening|night`).
+    `messageSource.getMessage(key, null, LocaleContextHolder.getLocale())`, where `key` is chosen by hour (`greeting.morning|afternoon|evening|night`).
 - **View**
   - `welcome.html`: use Thymeleaf message lookup for the title:  
     `<h1 th:text="#{welcome.title}">...</h1>`  
@@ -67,11 +42,6 @@ switchable via the URL parameter `?lang=<en|es>`.
   - fresh incognito sessions to avoid `SessionLocaleResolver` stickiness.
 - Conclusion for this iteration: **locale flips correctly, but message resolution still returns the Spanish variant in the rendered view/API**. We leave the locale debug visible (`[debug locale: en|es]`) to prove the parameter is honored, even though the title text itself is not switching.
  
-
-- **Feature 3**: Greeting history stored in memory and exposed via REST + optional web page.
-- Updated `README.md` with new endpoints and features.
-- Added KDoc documentation to controllers and services.
-
 ## 2. Technical Decisions
 - **Dynamic greeting**: Implemented in `HelloController.kt` using system time.
 - **Multi-language**: Used Spring Boot i18n with `messages.properties` + `messages_es.properties`.
