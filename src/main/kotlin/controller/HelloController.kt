@@ -58,7 +58,8 @@ class HelloApiController {
         return when (now.hour) {
             in 6..11 -> "Good morning"
             in 12..19 -> "Good afternoon"
-            else -> "Good evening"
+            in 20..22 -> "Good evening"
+            else -> "Good nigth"
         }
     }
 }
