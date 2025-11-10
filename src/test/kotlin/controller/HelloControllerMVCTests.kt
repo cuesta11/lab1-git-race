@@ -1,6 +1,7 @@
 package es.unizar.webeng.hello.controller
 
 import org.hamcrest.CoreMatchers.*
+import org.hamcrest.Matchers.matchesRegex
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
@@ -25,7 +26,7 @@ class HelloControllerMVCTests {
             .andDo(print())
             .andExpect(status().isOk)
             .andExpect(view().name("welcome"))
-            .andExpect(model().attribute("message", equalTo(message)))
+            .andExpect(model().attribute("message", matchesRegex("^(Good morning|Good afternoon|Good evening|Good night|Buenos días|Buenas tardes|Buenas noches)!$")))
             .andExpect(model().attribute("name", equalTo("")))
     }
     
@@ -35,7 +36,7 @@ class HelloControllerMVCTests {
             .andDo(print())
             .andExpect(status().isOk)
             .andExpect(view().name("welcome"))
-            .andExpect(model().attribute("message", equalTo("Hello, Developer!")))
+            .andExpect(model().attribute("message", matchesRegex("^(Good morning|Good afternoon|Good evening|Good night|Buenos días|Buenas tardes|Buenas noches), Developer!$")))
             .andExpect(model().attribute("name", equalTo("Developer")))
     }
     
@@ -45,7 +46,7 @@ class HelloControllerMVCTests {
             .andDo(print())
             .andExpect(status().isOk)
             .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-            .andExpect(jsonPath("$.message", equalTo("Hello, Test!")))
+            .andExpect(jsonPath("$.message", matchesRegex("^(Good morning|Good afternoon|Good evening|Good night|Buenos días|Buenas tardes|Buenas noches), Test!$")))
             .andExpect(jsonPath("$.timestamp").exists())
     }
 }

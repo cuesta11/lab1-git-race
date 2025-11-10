@@ -1,72 +1,85 @@
 # Lab 1 Git Race -- Project Report
 
-### Feature 2: Internationalization (i18n) with `?lang` parameter
-  
-Enable English/Spanish localization for:
-1) the dynamic greeting (web + API), and  
-2) the page title on the welcome view,  
-switchable via the URL parameter `?lang=<en|es>`.
+### Feature 2: Internacionalización (i18n)
 
-**Description of changes**
-- **Message bundles**
-  - `src/main/resources/messages.properties` (English, default)  
-    - `greeting.morning=Good morning`, `greeting.afternoon=Good afternoon`, `greeting.evening=Good evening`, `greeting.night=Good night`, `welcome.title=Welcome to the Modern Web App!`
-  - `src/main/resources/messages_es.properties` (Spanish)  
-    - `greeting.morning=Buenos días`, `greeting.afternoon=Buenas tardes`, `greeting.evening=Buenas noches`, `greeting.night=Buenas noches`, `welcome.title=¡Bienvenido a la Aplicación Web Moderna!`
-- **Spring configuration**
-  - `application.properties`:  
-    `spring.messages.basename=messages`  
-    `spring.messages.encoding=UTF-8`
-  - `LocaleConfig.kt`: `SessionLocaleResolver` (default `Locale.ENGLISH`) + `LocaleChangeInterceptor` with `paramName=lang` to honor `?lang=es|en`.
-- **Controllers**
-  - `HelloController.kt` / inner `HelloApiController`: inject `MessageSource` and resolve the greeting via  
-    `messageSource.getMessage(key, null, LocaleContextHolder.getLocale())`, where `key` is chosen by hour (`greeting.morning|afternoon|evening|night`).
-- **View**
-  - `welcome.html`: use Thymeleaf message lookup for the title:  
-    `<h1 th:text="#{welcome.title}">...</h1>`  
-  - Added a temporary debug line to display the effective locale:  
-    `[debug locale: <span th:text="${#locale}">en</span>]`.
+Permite cambiar entre inglés y español mediante el parámetro URL `?lang=<en|es>`.
 
-**What works**
-- The `LocaleChangeInterceptor` is registered and active.  
-- The effective locale **does change** with `?lang=en` / `?lang=es` (confirmed by the debug `[debug locale: en|es]`).  
-- API and web greeting are produced through `MessageSource` using the current locale.
+**Implementación**:
 
-**What we attempted but did not succeed**
-- Despite the locale switching and the i18n setup, the **rendered page title and greeting text remain in Spanish** even when `[debug locale: en]` is shown and `messages.properties` (EN) is the default bundle.
-- We validated:
-  - bundles exist and keys match,
-  - template uses `th:text="#{welcome.title}"`,
-  - controllers call `MessageSource` with `LocaleContextHolder.getLocale()`,
-  - cache cleared and clean rebuilds (`./gradlew clean bootRun`),
-  - fresh incognito sessions to avoid `SessionLocaleResolver` stickiness.
-- Conclusion for this iteration: **locale flips correctly, but message resolution still returns the Spanish variant in the rendered view/API**. We leave the locale debug visible (`[debug locale: en|es]`) to prove the parameter is honored, even though the title text itself is not switching.
- 
-## 2. Technical Decisions
-- **Dynamic greeting**: Implemented in `HelloController.kt` using system time.
-- **Multi-language**: Used Spring Boot i18n with `messages.properties` + `messages_es.properties`.
-- **Greeting history**: Stored in a simple in-memory list (no database, to keep it lightweight).
-- **Testing**: Verified with existing JUnit tests + added small new tests.
-- **Docker**: Application also tested inside `docker-compose.dev.yml`.
+1. **Archivos de mensajes**:
+   - `messages.properties` (inglés): `greeting.morning=Good morning`, `welcome.title=Welcome to the Modern Web App!`
+   - `messages_es.properties` (español): `greeting.morning=Buenos días`, `welcome.title=¡Bienvenido a la Aplicación Web Moderna!`
 
-## 3. Learning Outcomes
-- Understood how to extend a Kotlin + Spring Boot application.
-- Learned how to add i18n support in Spring Boot.
-- Gained experience with REST API endpoints and Thymeleaf templates.
-- Improved Git workflow with branches and clean commit history.
-- Practiced documenting features in Markdown.
+2. **Configuración Spring** (`LocaleConfig.kt`):
+   - `MessageSource` bean con UTF-8 encoding
+   - `SessionLocaleResolver` (locale por defecto: inglés)
+   - `LocaleChangeInterceptor` con parámetro `lang`
 
-## 4. AI Disclosure
-### AI Tools Used
-- ChatGPT (for explanations, guidance, code skeletons).
-  
-### AI-Assisted Work
-- Guidance for structuring `REPORT.md`.
-- Suggestions for controller logic and i18n configuration.
-- Advice on Git workflow and Docker usage.
-- Approx. 30% AI-assisted, 70% manual implementation and adaptation.
+3. **Controladores**:
+   - Inyectan `MessageSource` y usan `LocaleContextHolder.getLocale()`
+   - `GreetingHelper` centraliza la lógica (DRY)
 
-### Original Work
-- Implementation of features in Kotlin and Spring Boot.
-- Manual testing and debugging.
-- Writing documentation and adapting AI suggestions to project requirements.
+4. **Vista**:
+   - Título internacionalizado: `<h1 th:text="#{welcome.title}">...</h1>`
+   - Línea debug para verificar locale actual
+
+**Funcionamiento**:
+- `/` → Inglés (default)
+- `/?lang=es` → Español
+- `/?lang=en` → Inglés
+- El locale persiste en sesión
+
+**Archivos modificados**:
+- `src/main/kotlin/es/unizar/webeng/hello/config/LocaleConfig.kt` (NEW)
+- `src/main/kotlin/controller/HelloController.kt`
+- `src/main/resources/messages*.properties` (NEW)
+- `src/main/resources/templates/welcome.html`
+- Todos los tests actualizados
+
+---
+
+## 2. Decisiones Técnicas
+
+- **Patrón DRY**: Helper object `GreetingHelper` elimina duplicación de código
+- **Spring Boot i18n estándar**: `ResourceBundleMessageSource` + `LocaleChangeInterceptor`
+- **Session-based locale**: Persiste preferencia del usuario
+- **UTF-8 encoding**: Soporta caracteres españoles (ñ, á, ¡, ¿)
+- **Tests flexibles**: Usan regex para aceptar cualquier saludo válido según hora
+
+---
+
+## 3. Aprendizajes
+
+- Sistema i18n de Spring Boot (`MessageSource`, `LocaleResolver`, interceptores)
+- Inyección de dependencias en Kotlin con Spring
+- Testing con Mockito para mocks de beans Spring
+- Expresiones Thymeleaf para mensajes (`#{key}`)
+- Debugging de problemas de configuración (faltaba bean `MessageSource`)
+- Refactorización para eliminar código duplicado
+
+---
+
+## 4. Uso de IA
+
+### Herramientas
+- ChatGPT (debugging y consultas)
+
+### Contribución estimada: 30% IA
+
+**IA ayudó con**:
+- Estructura inicial de `LocaleConfig`
+- Identificar que faltaba el bean `MessageSource`
+- Sugerencias de mocks con Mockito
+- Patrones regex para tests
+- Comentarios KDoc
+- Redaccion de REPORT.md
+
+**Trabajo original**:
+- Implementación completa en Kotlin
+- Decisión de usar `GreetingHelper` object
+- Testing manual en navegador
+- Debugging y fix de tests
+- Refactorización de código duplicado
+- Documentación técnica completa
+
+
