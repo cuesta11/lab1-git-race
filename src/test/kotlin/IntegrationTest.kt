@@ -24,7 +24,9 @@ class IntegrationTest {
         
         assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
         assertThat(response.body).contains("<title>Modern Web App</title>")
-        assertThat(response.body).contains("Welcome to Modern Web App")
+        val hasEnglishTitle = response.body!!.contains("Welcome to the Modern Web App!")
+        val hasSpanishTitle = response.body!!.contains("¡Bienvenido a la Aplicación Web Moderna!")
+        assertThat(hasEnglishTitle || hasSpanishTitle).isTrue()
         assertThat(response.body).contains("Interactive HTTP Testing & Debug")
         assertThat(response.body).contains("Client-Side Educational Tool")
     }
@@ -34,8 +36,14 @@ class IntegrationTest {
         val response = restTemplate.getForEntity("http://localhost:$port?name=Developer", String::class.java)
         
         assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
-        assertThat(response.body).containsPattern("^(?s).*Good (morning|afternoon|evening|night), Developer!.*$")
-
+        val hasGreeting = response.body!!.contains("Good morning, Developer!") ||
+                         response.body!!.contains("Good afternoon, Developer!") ||
+                         response.body!!.contains("Good evening, Developer!") ||
+                         response.body!!.contains("Good night, Developer!") ||
+                         response.body!!.contains("Buenos días, Developer!") ||
+                         response.body!!.contains("Buenas tardes, Developer!") ||
+                         response.body!!.contains("Buenas noches, Developer!")
+        assertThat(hasGreeting).isTrue()
     }
 
     @Test
@@ -44,7 +52,8 @@ class IntegrationTest {
         
         assertThat(response.statusCode).isEqualTo(HttpStatus.OK)
         assertThat(response.headers.contentType).isEqualTo(MediaType.APPLICATION_JSON)
-        assertThat(response.body).containsPattern("^(?s).*Good (morning|afternoon|evening|night), Test!.*$")
+
+        assertThat(response.body).matches(".*((Good morning|Good afternoon|Good evening|Good night|Buenos días|Buenas tardes|Buenas noches), Test!).*")
         assertThat(response.body).contains("timestamp")
     }
 

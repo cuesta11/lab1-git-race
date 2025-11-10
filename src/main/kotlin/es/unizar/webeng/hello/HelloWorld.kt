@@ -1,13 +1,11 @@
 package es.unizar.webeng.hello
 
 import org.springframework.boot.autoconfigure.SpringBootApplication
-import org.springframework.boot.context.properties.ConfigurationPropertiesScan
 import org.springframework.boot.runApplication
 
 @SpringBootApplication
-@ConfigurationPropertiesScan
-class Application
+class HelloWorld
 
 fun main(args: Array<String>) {
-    runApplication<Application>(*args)
+    runApplication<HelloWorld>(*args)
 }

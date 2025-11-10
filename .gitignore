@@ -6,7 +6,7 @@ build/
 bin/
 .vscode/
 .DS_Store
-subEsquema.txt
+.kotlin/
 
 # Ignore Gradle GUI config
 gradle-app.setting

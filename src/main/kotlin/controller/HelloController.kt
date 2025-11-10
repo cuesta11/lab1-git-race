@@ -7,59 +7,57 @@ import org.springframework.ui.Model
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
+import org.springframework.context.MessageSource
+import org.springframework.context.i18n.LocaleContextHolder
 import java.time.LocalTime
 
+
+object GreetingHelper {
+    fun getTimeBasedGreeting(messageSource: MessageSource): String {
+        val now = LocalTime.now()
+        val locale = LocaleContextHolder.getLocale()
+        val key = when (now.hour) {
+            in 6..11 -> "greeting.morning"
+            in 12..19 -> "greeting.afternoon"
+            in 20..22 -> "greeting.evening"
+            else -> "greeting.night"
+        }
+        return messageSource.getMessage(key, null, locale)
+    }
+}
+
+/**
+ * Main controller for the web interface.
+ */
 @Controller
 class HelloController(
-    @param:Value("\${app.message:Hello World}")
-    private val message: String
+    @param:Value("\${app.message:Hello World}") 
+    private val message: String,
+    private val messageSource: MessageSource
 ) {
-
     @GetMapping("/")
     fun welcome(
         model: Model,
         @RequestParam(defaultValue = "") name: String
     ): String {
-        val timeBasedGreeting = getTimeBasedGreeting()
+        val timeBasedGreeting = GreetingHelper.getTimeBasedGreeting(messageSource)
         val greeting = if (name.isNotBlank()) "$timeBasedGreeting, $name!" else "$timeBasedGreeting!"
         model.addAttribute("message", greeting)
         model.addAttribute("name", name)
         return "welcome"
     }
-
-    /**
-     * Returns a greeting based on the current time of day.
-     */
-    private fun getTimeBasedGreeting(): String {
-        val now = LocalTime.now()
-        return when (now.hour) {
-            in 3..12 -> "Good morning"
-            in 13..19 -> "Good afternoon"
-            in 20..22 -> "Good evening"
-            else -> "Good night"
-        }
-    }
 }
 
 @RestController
-class HelloApiController {
-
+class HelloApiController(
+    private val messageSource: MessageSource
+) {
     @GetMapping("/api/hello", produces = [MediaType.APPLICATION_JSON_VALUE])
     fun helloApi(@RequestParam(defaultValue = "World") name: String): Map<String, String> {
-        val timeBasedGreeting = getTimeBasedGreeting()
+        val timeBasedGreeting = GreetingHelper.getTimeBasedGreeting(messageSource)
         return mapOf(
             "message" to "$timeBasedGreeting, $name!",
             "timestamp" to java.time.Instant.now().toString()
         )
-    }
-
-    private fun getTimeBasedGreeting(): String {
-        val now = LocalTime.now()
-        return when (now.hour) {
-            in 6..11 -> "Good morning"
-            in 12..19 -> "Good afternoon"
-            in 20..22 -> "Good evening"
-            else -> "Good nigth"
-        }
     }
 }

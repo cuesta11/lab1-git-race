@@ -1,62 +1,85 @@
 # Lab 1 Git Race -- Project Report
 
-## Description of Changes
+### Feature 2: Internacionalización (i18n)
 
-### Feature 1: Dynamic Greeting
-- Implemented time-based greeting in `HelloController.kt` (morning/afternoon/evening/late night).
-- Added unit, MVC, and integration tests using regex to cover all time ranges.
-- Verified with `./gradlew test` → all tests passed.
+Permite cambiar entre inglés y español mediante el parámetro URL `?lang=<en|es>`.
 
-### Feature 2: Internationalization (i18n)
-- Added message bundles: `messages.properties` (EN) and `messages_es.properties` (ES).
-- Configured `application.properties` with `spring.messages.basename=messages`.
-- Implemented `LocaleConfig.kt` with `SessionLocaleResolver` and `LocaleChangeInterceptor` (`?lang=xx` parameter).
-- Updated controllers to fetch messages from `MessageSource` and templates with `th:text="#{...}"`.
-- **Current limitation:** locale switching works (debug shows correct locale), but greetings and titles remain static (always Spanish).  
-- Documented as a **partial implementation**.
+**Implementación**:
 
-### Feature 3: Greeting History
-- Extended `HelloApiController` with a simple in-memory `history` list.
-- Every call to `/api/hello` stores the generated greeting in history.
-- Added new endpoint `/api/history` returning all greetings in JSON.
-- Integration test ensures:
-  - Multiple greetings are stored after consecutive `/api/hello` requests.
-  - `/api/history` returns them correctly.
-- Verified with both manual `curl` requests and automated integration tests.
+1. **Archivos de mensajes**:
+   - `messages.properties` (inglés): `greeting.morning=Good morning`, `welcome.title=Welcome to the Modern Web App!`
+   - `messages_es.properties` (español): `greeting.morning=Buenos días`, `welcome.title=¡Bienvenido a la Aplicación Web Moderna!`
 
----
+2. **Configuración Spring** (`LocaleConfig.kt`):
+   - `MessageSource` bean con UTF-8 encoding
+   - `SessionLocaleResolver` (locale por defecto: inglés)
+   - `LocaleChangeInterceptor` con parámetro `lang`
 
-## Technical Decisions
-- **Kotlin & Spring Boot**: followed project template with minimalistic approach.
-- **Testing**: integration tests preferred to validate feature behavior end-to-end.
-- **i18n**: implemented with standard Spring `MessageSource` but kept partial due to unresolved template/API binding issue.
-- **History implementation**: opted for simplest approach (static list inside controller) instead of service injection, as acceptable for this lab context.
+3. **Controladores**:
+   - Inyectan `MessageSource` y usan `LocaleContextHolder.getLocale()`
+   - `GreetingHelper` centraliza la lógica (DRY)
 
----
+4. **Vista**:
+   - Título internacionalizado: `<h1 th:text="#{welcome.title}">...</h1>`
+   - Línea debug para verificar locale actual
 
-## Learning Outcomes
-- Understood branch workflow with `origin` (fork) and `upstream` (teacher repo).
-- Practiced implementing features incrementally and validating with unit/MVC/integration tests.
-- Learned Spring Boot i18n configuration (locale resolver, interceptors, message bundles).
-- Reinforced debugging practices (logs, curl tests, and test isolation).
-- Balanced trade-offs between clean architecture (service layer) and pragmatic simplicity (static list for history).
+**Funcionamiento**:
+- `/` → Inglés (default)
+- `/?lang=es` → Español
+- `/?lang=en` → Inglés
+- El locale persiste en sesión
+
+**Archivos modificados**:
+- `src/main/kotlin/es/unizar/webeng/hello/config/LocaleConfig.kt` (NEW)
+- `src/main/kotlin/controller/HelloController.kt`
+- `src/main/resources/messages*.properties` (NEW)
+- `src/main/resources/templates/welcome.html`
+- Todos los tests actualizados
 
 ---
 
+## 2. Decisiones Técnicas
 
-## AI Disclosure
-### AI Tools Used
-- ChatGPT (for explanations, guidance, code skeletons).
+- **Patrón DRY**: Helper object `GreetingHelper` elimina duplicación de código
+- **Spring Boot i18n estándar**: `ResourceBundleMessageSource` + `LocaleChangeInterceptor`
+- **Session-based locale**: Persiste preferencia del usuario
+- **UTF-8 encoding**: Soporta caracteres españoles (ñ, á, ¡, ¿)
+- **Tests flexibles**: Usan regex para aceptar cualquier saludo válido según hora
 
-### AI-Assisted Work
-- Guidance for structuring `REPORT.md`.
-- Suggestions for controller logic and i18n configuration.
-- Advice on Git workflow and Docker usage.
-- Approx. 30% AI-assisted, 70% manual implementation and adaptation.
-- A lot of help with branchs and git.
+---
 
-### Original Work
-- Manual setup of environment, Gradle, Docker, and repo workflow.
-- Implemented and debugged code locally.
-- Ran and validated all tests and application behavior.
-- Developed understanding of i18n, REST controllers, and integration testing by actively modifying and testing the code.
+## 3. Aprendizajes
+
+- Sistema i18n de Spring Boot (`MessageSource`, `LocaleResolver`, interceptores)
+- Inyección de dependencias en Kotlin con Spring
+- Testing con Mockito para mocks de beans Spring
+- Expresiones Thymeleaf para mensajes (`#{key}`)
+- Debugging de problemas de configuración (faltaba bean `MessageSource`)
+- Refactorización para eliminar código duplicado
+
+---
+
+## 4. Uso de IA
+
+### Herramientas
+- ChatGPT (debugging y consultas)
+
+### Contribución estimada: 30% IA
+
+**IA ayudó con**:
+- Estructura inicial de `LocaleConfig`
+- Identificar que faltaba el bean `MessageSource`
+- Sugerencias de mocks con Mockito
+- Patrones regex para tests
+- Comentarios KDoc
+- Redaccion de REPORT.md
+
+**Trabajo original**:
+- Implementación completa en Kotlin
+- Decisión de usar `GreetingHelper` object
+- Testing manual en navegador
+- Debugging y fix de tests
+- Refactorización de código duplicado
+- Documentación técnica completa
+
+
