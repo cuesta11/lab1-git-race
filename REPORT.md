@@ -43,17 +43,17 @@
 
 ---
 
-## AI Disclosure
 
+## AI Disclosure
 ### AI Tools Used
-- ChatGPT (OpenAI)
+- ChatGPT (for explanations, guidance, code skeletons).
 
 ### AI-Assisted Work
-- Help telling how do gitHub and branches work.
-- Guidance on incremental implementation.
-- Suggested code snippets for controllers, tests, and configuration.
-- Help structuring the project report and documentation.
-- Estimated ~40% of boilerplate/test code and documentation text was AI-assisted.
+- Guidance for structuring `REPORT.md`.
+- Suggestions for controller logic and i18n configuration.
+- Advice on Git workflow and Docker usage.
+- Approx. 30% AI-assisted, 70% manual implementation and adaptation.
+- A lot of help with branchs and git.
 
 ### Original Work
 - Manual setup of environment, Gradle, Docker, and repo workflow.

@@ -19,29 +19,36 @@ class HelloControllerUnitTests {
     @Test
     fun `should return welcome view with default message`() {
         val view = controller.welcome(model, "")
-        
+
         assertThat(view).isEqualTo("welcome")
-        assertThat(model.getAttribute("message")).isEqualTo("Test Message")
+        val message = model.getAttribute("message") as String
+        assertThat(message).matches("^(Good morning|Good afternoon|Good evening|Good night)!$")
         assertThat(model.getAttribute("name")).isEqualTo("")
     }
+
     
     @Test
-    fun `should return welcome view with personalized message`() {
+    fun `should return welcome view with dynamic greeting`() {
         val view = controller.welcome(model, "Developer")
-        
+
         assertThat(view).isEqualTo("welcome")
-        assertThat(model.getAttribute("message")).isEqualTo("Hello, Developer!")
+        val message = model.getAttribute("message") as String
+
+        // Check that the message starts with one of the expected greetings
+        assertThat(message).matches("^(Good morning|Good afternoon|Good evening|Good night), Developer!$")
         assertThat(model.getAttribute("name")).isEqualTo("Developer")
     }
+
     
     @Test
-    fun `should return API response with timestamp`() {
+    fun `should return API response with dynamic greeting`() {
         val apiController = HelloApiController()
         val response = apiController.helloApi("Test")
-        
+
         assertThat(response).containsKey("message")
         assertThat(response).containsKey("timestamp")
-        assertThat(response["message"]).isEqualTo("Hello, Test!")
-        assertThat(response["timestamp"]).isNotNull()
+
+        val message = response["message"]!!
+        assertThat(message).matches("^(Good morning|Good afternoon|Good evening|Good night), Test!$")
     }
 }
