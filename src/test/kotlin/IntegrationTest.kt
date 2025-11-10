@@ -58,6 +58,24 @@ class IntegrationTest {
     }
 
     @Test
+    fun `should store greetings in history`() {
+        val response1 = restTemplate.getForEntity("http://localhost:$port/api/hello?name=Ana", String::class.java)
+        val response2 = restTemplate.getForEntity("http://localhost:$port/api/hello?name=Luis", String::class.java)
+
+        assertThat(response1.statusCode).isEqualTo(HttpStatus.OK)
+        assertThat(response2.statusCode).isEqualTo(HttpStatus.OK)
+
+        val historyResponse = restTemplate.getForEntity("http://localhost:$port/api/history", String::class.java)
+
+        assertThat(historyResponse.statusCode).isEqualTo(HttpStatus.OK)
+        assertThat(historyResponse.headers.contentType).isEqualTo(MediaType.APPLICATION_JSON)
+
+        // Accept any dynamic + i18n greeting variants containing the names
+        assertThat(historyResponse.body).contains("Ana")
+        assertThat(historyResponse.body).contains("Luis")
+    }
+
+    @Test
     fun `should serve Bootstrap CSS correctly`() {
         val response = restTemplate.getForEntity("http://localhost:$port/webjars/bootstrap/5.3.3/css/bootstrap.min.css", String::class.java)
         

@@ -19,6 +19,13 @@
 - Improved time ranges and fixed typo ("Good nigth" → "Good night") from previous implementation.
 - Verified with manual browser testing and automated tests → all 12 tests passed.
 
+### Feature 3: Greeting History (API)
+- Added in-memory history (static list) in `HelloApiController`.
+- Each call to `/api/hello` stores the full dynamic + i18n greeting (e.g. "Good morning, Ana!" / "Buenos días, Ana!").
+- New endpoint `/api/history` returns the accumulated greetings (snapshot copy with `toList()`).
+- Added integration test: performs two `/api/hello` calls and asserts both names appear in `/api/history` response.
+- Kept intentionally simple (no persistence, no size limit) per lab scope.
+
 ---
 
 ## Technical Decisions
@@ -28,6 +35,9 @@
 - **Session-based locale**: `SessionLocaleResolver` persists user's language choice across requests.
 - **UTF-8 encoding**: essential for Spanish characters (ñ, á, ¡, ¿).
 - **Testing**: integration tests validate end-to-end behavior; unit tests mock `MessageSource` with Mockito; MVC tests use regex patterns for flexible assertions.
+ - **History storage simplicity**: Chosen `mutableListOf<String>()` inside companion object—acceptable for educational scope (single-instance JVM, no concurrency hazards considered here).
+ - **Snapshot return**: `history.toList()` avoids accidental external mutation.
+ - **Non-persistent**: No DB—fits lab constraints and keeps focus on web/i18n aspects.
 
 ---
 

@@ -52,12 +52,22 @@ class HelloController(
 class HelloApiController(
     private val messageSource: MessageSource
 ) {
+    companion object {
+        // Simple in-memory history to store generated greetings
+        private val history = mutableListOf<String>()
+    }
+
     @GetMapping("/api/hello", produces = [MediaType.APPLICATION_JSON_VALUE])
     fun helloApi(@RequestParam(defaultValue = "World") name: String): Map<String, String> {
         val timeBasedGreeting = GreetingHelper.getTimeBasedGreeting(messageSource)
+        val fullGreeting = "$timeBasedGreeting, $name!"
+        history.add(fullGreeting)
         return mapOf(
-            "message" to "$timeBasedGreeting, $name!",
+            "message" to fullGreeting,
             "timestamp" to java.time.Instant.now().toString()
         )
     }
+
+    @GetMapping("/api/history", produces = [MediaType.APPLICATION_JSON_VALUE])
+    fun historyApi(): List<String> = history.toList()
 }
